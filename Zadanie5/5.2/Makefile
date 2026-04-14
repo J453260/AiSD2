@@ -1,13 +1,29 @@
-CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17
+ifeq ($(OS), Windows_NT)
+    RM = del /f /q
+else
+    RM = rm -f
+endif
 
-TARGET = DFS
-SRC = main.cpp
+CXX = g++
+LIBS =
+CXXFLAGS = -Wall -Wextra -std=c++17 -g
+OBJECTS = main.o
+#HFILES = edge.hpp basegraph.hpp iterator.hpp graph.hpp bfs.hpp
+HFILES = dfs.hpp graph.hpp
+TARGET = main.out
+
+%.o : %.cpp $(HFILES) Makefile
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(TARGET) : $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) $(LIBS) -o $(TARGET)
+
+.PHONY : clean run all
 
 all: $(TARGET)
 
-$(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
+run: $(TARGET)
+	./$(TARGET)
 
-clean:
-	rm -f $(TARGET)
+clean :
+	$(RM) $(TARGET) *.o core
