@@ -5,15 +5,11 @@
 #include <set>
 #include <unordered_map>
 #include <cassert>
-#include <windows.h>
 #include "dfs.hpp"
 #include "graph.hpp"
 
 int main()
 {
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
-
     const int n = 10;
     std::mt19937 rng(std::random_device{}());
 
