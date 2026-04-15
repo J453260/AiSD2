@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <random>
 #include <set>
-#include <windows.h>
 #include "bfs.hpp"
 #include <cassert>
 
@@ -42,8 +41,6 @@ public:
 
 int main()
 {
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
     const int n = 10;
     std::mt19937 rng(std::random_device{}());
 
