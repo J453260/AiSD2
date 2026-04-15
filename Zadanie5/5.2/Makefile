@@ -1,14 +1,6 @@
-ifeq ($(OS), Windows_NT)
-    RM = del /f /q
-else
-    RM = rm -f
-endif
-
 CXX = g++
-LIBS =
 CXXFLAGS = -Wall -Wextra -std=c++17 -g
 OBJECTS = main.o
-#HFILES = edge.hpp basegraph.hpp iterator.hpp graph.hpp bfs.hpp
 HFILES = dfs.hpp graph.hpp
 TARGET = main.out
 
