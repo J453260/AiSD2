@@ -5,7 +5,6 @@
 #include <stack>
 #include <unordered_map>
 
-// DFS pomocniczy
 template<typename T, typename G>
 void dfs_visit(const T& u,
                G& graph,
@@ -19,12 +18,10 @@ void dfs_visit(const T& u,
             dfs_visit(v, graph, visited, st);
         }
     }
-
-    // po przetworzeniu wszystkich sąsiadów
+  
     st.push(u);
 }
 
-// sortowanie topologiczne (DFS)
 template<typename T, typename G>
 std::vector<T> topsort_dfs(G& graph)
 {
