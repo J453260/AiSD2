@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <cassert>
 #include "topsort.hpp"
 
 int main()
@@ -29,6 +30,28 @@ int main()
         std::cout << v << " ";
     }
     std::cout << std::endl;
+
+
+    std::unordered_map<int, int> position;
+    for (int i = 0; i < result.size(); i++)
+    {
+        position[result[i]] = i;
+    }
+
+    assert(result.size() == graph.size());
+
+    for (const auto& [u, neighbors] : graph)
+    {
+        for (int v : neighbors)
+        {
+            // u musi być przed v
+            assert(position[u] < position[v]);
+        }
+    }
+
+    std::cout << std::endl;
+
+    std::cout << "Wszystkie testy przeszly poprawnie"<<std::endl;
 
     return 0;
 }
