@@ -6,8 +6,7 @@
 int main()
 {
     Graph<int> G;
-
-    // dodaj wierzchołki
+    
     for (int i = 0; i < 10; i++)
     {
         G.add_node(i);
@@ -49,14 +48,13 @@ int main()
     assert(cc.component[0] != cc.component[4]);
     assert(cc.component[0] != cc.component[7]);
     assert(cc.component[4] != cc.component[7]);
-
-    // wypisz wynik
+    
     for (auto& pair : cc.component)
     {
         std::cout << pair.first << " -> component " << pair.second << std::endl;
     }
 
-    std::cout << "Total components: " << cc.ncc << std::endl;
+    std::cout << "Wszystkie komponenty: " << cc.ncc << std::endl;
 
     return 0;
 }
