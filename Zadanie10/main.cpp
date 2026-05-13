@@ -4,11 +4,8 @@
 #include "FloydWarshall.hpp"
 #include "graph.hpp"
 
-std::vector<std::vector<int>> transitive_closure(
-                               int n,
-                               const std::vector<std::pair<int,int>>& edges)
+std::vector<std::vector<int>> transitive_closure(int n, const std::vector<std::pair<int,int>>& edges)
 {
-    // T^(0): 1 jeśli i==j lub krawędź (i,j) istnieje
     std::vector<std::vector<int>> T(n, std::vector<int>(n, 0));
 
     for (int i = 0; i < n; i++)
@@ -39,11 +36,9 @@ std::vector<std::vector<int>> transitive_closure(
 
 int main()
 {
-    // Graf skierowany, n=10
     const int n = 10;
     Graph g(n, true);
 
-    // Dodaj krawędzie (losowy przykładowy graf skierowany)
     g.add_edge(0, 1, 1.0f);
     g.add_edge(0, 3, 1.0f);
     g.add_edge(1, 2, 1.0f);
@@ -57,22 +52,41 @@ int main()
     g.add_edge(3, 6, 1.0f);
     g.add_edge(1, 5, 1.0f);
 
-    // Asserty: podstawowe właściwości grafu
+
+    std::cout << "Liczba wierzcholkow: " << g.v() << std::endl;
+    std::cout << "Liczba krawedzi:     " << g.e() << std::endl;
+
+    // Podstawowe właściwości grafu
     assert(g.v() == 10);
     assert(g.e() == 12);
     assert(g.is_directed() == true);
 
-    // Asserty: has_edge
+
+    std::cout << std::endl;
+    std::cout << "has_edge(0,1): " << g.has_edge(0,1) << std::endl;
+    std::cout << "has_edge(1,0): " << g.has_edge(1,0) << std::endl;
+    std::cout << "has_edge(0,9): " << g.has_edge(0,9) << std::endl;
+    std::cout << "has_edge(8,9): " << g.has_edge(8,9) << std::endl;
+    std::cout << std::endl;
+
+    // Has_edge
     assert(g.has_edge(0, 1) == true);
     assert(g.has_edge(1, 0) == false);  // skierowany - brak krawędzi zwrotnej
     assert(g.has_edge(0, 9) == false);
     assert(g.has_edge(8, 9) == true);
 
-    // Asserty: wagi
+    // Wagi
     assert(g.weight(0, 1) == 1.0f);
     assert(g.weight(0, 9) == 0.0f);  // brak krawędzi -> waga 0
 
-    // Asserty: stopnie
+
+    std::cout << "Stopnie wierzcholkow" << std::endl;
+    for (int u = 0; u < n; u++)
+    {
+        std::cout << "  v" << u << "  indegree=" << g.indegree(u) << "  outdegree=" << g.outdegree(u) << std::endl;
+    }
+
+    // Stopnie
     assert(g.outdegree(0) == 2);  // 0->1, 0->3
     assert(g.indegree(0)  == 0);  // nic nie wchodzi do 0
     assert(g.outdegree(4) == 1);  // 4->5
@@ -80,22 +94,35 @@ int main()
     assert(g.outdegree(9) == 0);  // 9 nie ma wychodzących
     assert(g.indegree(9)  == 1);  // 8->9
 
-    // Asserty: has_node
+
+    std::cout << std::endl;
+    std::cout << "Sprawdzanie wierzcholkow";
+    std::cout << "has_node(0):  " << g.has_node(0)  << std::endl;
+    std::cout << "has_node(9):  " << g.has_node(9)  << std::endl;
+    std::cout << "has_node(10): " << g.has_node(10) << std::endl;
+
+    // Has_node
     assert(g.has_node(0)  == true);
     assert(g.has_node(9)  == true);
     assert(g.has_node(10) == false);
 
-    // Asserty: NodeIterator — przejdź przez wszystkie wierzchołki
+    // NodeIterator — przejdź przez wszystkie wierzchołki
     int node_count = 0;
+    std::cout << "NodeIterator, wierzcholki: ";
     for (auto it = g.node_begin(); it != g.node_end(); ++it)
     {
+        std::cout << *it << " ";
         assert(g.has_node(*it));
         node_count++;
     }
+    std::cout << std::endl;
+    std::cout << "Liczba wierzcholkow: " << node_count << std::endl;
     assert(node_count == n);
 
-    // Asserty: EdgeIterator — przejdź przez wszystkie krawędzie
+    // EdgeIterator — przejdź przez wszystkie krawędzie
     int edge_count = 0;
+    std::cout << std::endl;
+    std::cout << "EdgeIterator, krawedzie:" << std::endl;
     for (auto it = g.edge_begin(); it != g.edge_end(); ++it)
     {
         assert(g.has_edge(*it));
@@ -103,10 +130,25 @@ int main()
     }
     assert(edge_count == g.e());
 
-    // Asserty: AdjacentIterator — sąsiedzi wierzchołka 0
+    // AdjacentIterator — sąsiedzi wierzchołka 0
     std::vector<int> adj0;
     for (auto it = g.adj_begin(0); it != g.adj_end(0); ++it)
+    {
         adj0.push_back(*it);
+    }
+
+    std::cout << std::endl;
+    std::cout << "AdjacentIterator";
+    std::cout << std::endl;
+    for (int u = 0; u < n; u++)
+    {
+        std::cout << "  Sasiedzi v" << u << ": ";
+        for (auto it = g.adj_begin(u); it != g.adj_end(u); ++it)
+        {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+    }
     assert(adj0.size() == 2);
     assert(std::find(adj0.begin(), adj0.end(), 1) != adj0.end());
     assert(std::find(adj0.begin(), adj0.end(), 3) != adj0.end());
@@ -116,7 +158,7 @@ int main()
     assert(g.has_edge(0, 1) == false);
     assert(g.e() == 11);
 
-    // Asserty: del_node (zeruje wiersze i kolumny)
+    // Del_node (zeruje wiersze i kolumny)
     g.del_node(9);
     assert(g.has_edge(8, 9) == false);
 
@@ -131,6 +173,7 @@ int main()
         }
     }
 
-    std::cout << "Wszystkie asserty przeszly pomyslnie.\n";
+    std::cout << std::endl;
+    std::cout << "Wszystkie asserty przeszly pomyslnie." << std::endl;
     return 0;
 }
