@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -g
 OBJECTS = main.o
-HFILES = edge.hpp basegraph.hpp iterator.hpp graph.hpp FloydWarshall.hpp
+HFILES = edge.hpp basegraph.hpp iterator.hpp graph.hpp FloydWarshall.hpp TransitiveClosure.hpp
 TARGET = main.out
 
 %.o : %.cpp $(HFILES) Makefile
