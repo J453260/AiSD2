@@ -256,7 +256,7 @@ public:
         }
         Edge<int> operator*() const override
         {
-            return Edge<int>(r, c);
+            return Edge<int>(r, c, gptr->weight(r, c));
         }
     };
     EdgeIterator edge_begin()
