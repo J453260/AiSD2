@@ -1,192 +1,113 @@
 # Algorytm Borůvki
 
-Algorytm Borůvki wyznacza **minimalne drzewo rozpinające** (MST) grafu nieskierowanego z wagami. Został opublikowany przez Otakara Borůvkę w 1926 roku — jest jednym z najstarszych algorytmów grafowych.
+Algorytm Borůvki służy do wyznaczania **minimalnego drzewa rozpinającego** (MST – Minimum Spanning Tree) grafu ważonego. Jego działanie polega na stopniowym łączeniu rozłącznych składowych grafu za pomocą najtańszych dostępnych krawędzi.
 
----
+## Idea działania
 
-## Idea
+Na początku każdy wierzchołek tworzy osobną składową.
 
-W odróżnieniu od algorytmu Prima (rozrasta jedną składową) i Kruskala (przetwarza krawędzie po kolei), Borůvka działa **równolegle na wszystkich składowych naraz**. W każdej rundzie każda składowa dokłada do MST swoją najtańszą krawędź wychodzącą na zewnątrz.
+W każdej iteracji algorytm:
 
----
+1. Dla każdej aktualnej składowej znajduje najtańszą krawędź prowadzącą do innej składowej.
+2. Dodaje znalezione krawędzie do budowanego MST.
+3. Łączy składowe połączone wybranymi krawędziami.
+4. Powtarza proces aż wszystkie wierzchołki znajdą się w jednej składowej.
 
-## Wymagania
+Do efektywnego zarządzania składowymi wykorzystywana jest struktura **Union-Find (Disjoint Set Union)**.
 
-- Graf musi być **nieskierowany**
-- Graf musi być **spójny** (inaczej otrzymamy minimalne drzewo rozpinające lasu)
-- Wagi krawędzi muszą być **nieujemne**
+## Przykład
 
----
+Graf:
 
-## Pseudokod
-
-```
-procedura BoruvkaMST(G, weight):
-    T ← puste drzewo
-    uf ← Union-Find dla wszystkich wierzchołków V(G)
-    forest ← V(G)               # zbiór reprezentantów składowych
-    new_len ← |forest|
-    old_len ← new_len + 1
-
-    dopóki old_len > new_len:
-        old_len ← new_len
-        MinEdge[u] ← (∞, None, None)  dla każdego u w forest
-
-        # Faza 1: znajdź najtańszą krawędź wychodzącą z każdej składowej
-        dla każdej krawędzi (s, t) w E(G):
-            s2 ← uf.find(s)
-            t2 ← uf.find(t)
-            jeśli s2 ≠ t2:
-                jeśli weight(s,t) < MinEdge[s2].waga:
-                    MinEdge[s2] ← (weight(s,t), s, t)
-                jeśli weight(s,t) < MinEdge[t2].waga:
-                    MinEdge[t2] ← (weight(s,t), s, t)
-
-        # Faza 2: połącz składowe przez wybrane krawędzie
-        dla każdego u w forest:
-            (edge_weight, s, t) ← MinEdge[u]
-            jeśli edge_weight == ∞: kontynuuj   # graf niespójny
-            jeśli uf.find(s) ≠ uf.find(t):
-                uf.union(s, t)
-                dodaj (s, t) do T
-
-        # Zaktualizuj zbiór reprezentantów
-        forest ← { uf.find(v) : v w forest }
-        new_len ← |forest|
-        jeśli new_len == 1: przerwij
-
-    zwróć T
+```text
+A --1-- B
+|       |
+4       2
+|       |
+C --3-- D
 ```
 
----
+Początkowo:
 
-## Przykład działania
-
-Rozważmy graf o 5 wierzchołkach:
-
-```
-    2       5
-A ───── B ───── E
-│       │       │
-4       1       3
-│       │       │
-C ───── D ──────┘
-    6
+```text
+{A} {B} {C} {D}
 ```
 
-### Stan początkowy
+Najtańsze krawędzie wychodzące ze składowych:
 
-Każdy wierzchołek tworzy osobną składową. Union-Find zawiera pięć rozłącznych zbiorów:
-
-```
-{A}  {B}  {C}  {D}  {E}
-```
-
-### Runda 1 — faza 1: szukanie najtańszych krawędzi
-
-Dla każdej krawędzi grafu sprawdzamy, czy łączy dwie różne składowe.
-Każda składowa zapamiętuje najtańszą znalezioną krawędź wychodzącą:
-
-| Składowa | Kandydaci            | Wybrana krawędź |
-|----------|----------------------|-----------------|
-| `{A}`    | A–B (2), A–C (4)     | A–B (waga 2)    |
-| `{B}`    | A–B (2), B–D (1), B–E (5) | B–D (waga 1) |
-| `{C}`    | A–C (4), C–D (6)     | A–C (waga 4)    |
-| `{D}`    | B–D (1), C–D (6), D–E (3) | B–D (waga 1) |
-| `{E}`    | B–E (5), D–E (3)     | D–E (waga 3)    |
-
-### Runda 1 — faza 2: łączenie składowych
-
-Przetwarzamy wybrane krawędzie i łączymy składowe przez Union-Find.
-Sprawdzamy za każdym razem, czy obie strony krawędzi są nadal w różnych składowych
-(kilka składowych mogło wybrać tę samą krawędź):
-
-```
-A–B (2): find(A)≠find(B) → union(A,B), dodaj do MST   składowe: {A,B} {C} {D} {E}
-B–D (1): find(B)≠find(D) → union(B,D), dodaj do MST   składowe: {A,B,D} {C} {E}
-A–C (4): find(A)≠find(C) → union(A,C), dodaj do MST   składowe: {A,B,C,D} {E}
-B–D (1): find(B)==find(D) → pomiń (już połączone)
-D–E (3): find(D)≠find(E) → union(D,E), dodaj do MST   składowe: {A,B,C,D,E}
+```text
+A -> AB (1)
+B -> AB (1)
+C -> CD (3)
+D -> BD (2)
 ```
 
-### Wynik
+Po ich dodaniu:
 
-Po rundzie 1 mamy jedną składową — algorytm kończy działanie.
-
-```
-MST: A–B (2) + B–D (1) + A–C (4) + D–E (3) = suma wag: 10
-```
-
-```
-    2
-A ───── B
-│       │
-4       1
-│       │
-C       D
-        │
-        3
-        │
-        E
+```text
+A --1-- B
+         \
+          2
+           \
+            D
+            |
+            3
+            |
+            C
 ```
 
----
+Wszystkie wierzchołki zostały połączone, więc otrzymaliśmy minimalne drzewo rozpinające o koszcie:
+
+```text
+1 + 2 + 3 = 6
+```
 
 ## Struktura Union-Find
 
-Algorytm korzysta ze struktury **Union-Find** (zbiory rozłączne) do śledzenia składowych spójności.
+Implementacja wykorzystuje strukturę Union-Find do przechowywania informacji o aktualnych składowych grafu.
 
-| Operacja      | Opis                             | Złożoność      |
-|---------------|----------------------------------|----------------|
-| `find(x)`     | Zwraca reprezentanta składowej x | O(α(n)) ≈ O(1) |
-| `union(x, y)` | Łączy składowe zawierające x i y | O(α(n)) ≈ O(1) |
+Dostępne operacje:
 
-Gdzie α to odwrotna funkcja Ackermanna — w praktyce nie przekracza 4 dla żadnych realistycznych danych.
+- `find(x)` – zwraca reprezentanta składowej zawierającej wierzchołek `x`,
+- `unite(x, y)` – łączy dwie składowe.
 
-Dwie kluczowe optymalizacje Union-Find stosowane w algorytmie:
+Zastosowano:
+- kompresję ścieżki (*path compression*),
+- łączenie według rangi (*union by rank*),
 
-- **Kompresja ścieżki** — `find` spłaszcza drzewo, podłączając każdy węzeł bezpośrednio do korzenia
-- **Łączenie według rangi** — `union` zawsze podłącza mniejsze drzewo pod większe, zapobiegając degeneracji
+co zapewnia niemal stały czas działania obu operacji.
 
----
+## Złożoność obliczeniowa
 
-## Dlaczego algorytm jest poprawny?
+| Operacja | Złożoność |
+|-----------|-----------|
+| Jedna iteracja | O(E) |
+| Liczba iteracji | O(log V) |
+| Cały algorytm | O(E log V) |
 
-Poprawność opiera się na **twierdzeniu o przekroju**: dla każdego podziału wierzchołków na dwa rozłączne zbiory S i V\S, najtańsza krawędź przekrojowa należy do pewnego MST.
+gdzie:
 
-Każda składowa wyznacza naturalny przekrój — najtańsza krawędź wychodząca z niej jest **bezpieczna**, tzn. można ją dodać do MST bez utraty optymalności. Ponieważ w każdej rundzie każda składowa dodaje dokładnie jedną bezpieczną krawędź, cały wynik jest optymalny.
+- `V` – liczba wierzchołków,
+- `E` – liczba krawędzi.
 
----
+## Wynik
 
-## Dlaczego algorytm się zatrzymuje?
+Funkcja `BoruvkaMST()` zwraca wektor krawędzi należących do minimalnego drzewa rozpinającego:
 
-W każdej rundzie każda składowa łączy się z co najmniej jedną inną — liczba składowych **co najmniej się zmniejsza o połowę**. Przy n składowych na początku po co najwyżej log₂(n) rundach zostanie jedna. Warunek `old_len > new_len` wykrywa również graf niespójny — jeśli żadna składowa nie znalazła krawędzi wychodzącej, liczba składowych się nie zmienia i pętla kończy działanie.
+```cpp
+std::vector<std::tuple<float, int, int>>
+```
 
----
+Każdy element ma postać:
 
-## Złożoność
+```cpp
+(waga, źródło, cel)
+```
 
-| | Złożoność |
-|---|---|
-| Jedna runda (faza 1 + faza 2) | O(E) |
-| Liczba rund | O(log V) |
-| **Łącznie** | **O(E log V)** |
-| Pamięć | O(V + E) |
+i reprezentuje jedną krawędź MST.
 
----
+## Uwagi
 
-## Zastosowania
-
-- **Obliczenia równoległe i rozproszone** — składowe w każdej rundzie działają niezależnie, co łatwo zrównoleglić
-- **Grafy o bardzo dużej liczbie krawędzi** — liniowy koszt każdej rundy dobrze sprawdza się przy gęstych grafach
-- **Sieci komputerowe** — wyznaczanie minimalnego drzewa połączeń
-- **Klasteryzacja danych** — MST jako podstawa algorytmów grupowania
-
----
-
-## Uwagi implementacyjne
-
-- Graf musi być **nieskierowany**
-- Przy grafie niespójnym algorytm zwraca **minimalne drzewo rozpinające lasu** — osobne MST dla każdej składowej spójności
-- Wynik zawiera dokładnie **V − 1 krawędzi** dla grafu spójnego
-- Przy równych wagach wynik może się różnić między uruchomieniami, ale suma wag pozostaje minimalna
+- Graf powinien być nieskierowany.
+- Dla grafu spójnego wynik zawiera dokładnie `V - 1` krawędzi.
+- Dla grafu niespójnego algorytm zwraca minimalny las rozpinający (MSF).
