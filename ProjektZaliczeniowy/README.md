@@ -111,3 +111,29 @@ i reprezentuje jedną krawędź MST.
 - Graf powinien być nieskierowany.
 - Dla grafu spójnego wynik zawiera dokładnie `V - 1` krawędzi.
 - Dla grafu niespójnego algorytm zwraca minimalny las rozpinający (MSF).
+
+
+
+## Kompilacja
+
+Projekt zawiera plik `Makefile`, dlatego do kompilacji wystarczy użyć polecenia:
+
+```bash
+make
+```
+
+Po poprawnym zakończeniu kompilacji zostanie utworzony plik wykonywalny zgodnie z konfiguracją zawartą w `Makefile`.
+
+### Uruchomienie
+
+```bash
+make run
+```
+
+### Czyszczenie plików kompilacji
+
+Aby usunąć pliki obiektowe i plik wykonywalny:
+
+```bash
+make clean
+```
