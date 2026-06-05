@@ -19,6 +19,10 @@ int main()
     g.add_edge(3, 5, 6.0f);
     g.add_edge(4, 5, 8.0f);
 
+    std::cout << "\nLiczba wierzcholkow: " << g.v() << std::endl;
+
+    std::cout << "Liczba krawedzi: " << g.e() << std::endl;
+
     std::vector<std::tuple<float, int, int>> mst = BoruvkaMST(g);
 
     assert(mst.size() == n - 1);
@@ -27,9 +31,13 @@ int main()
 
     for (auto& [w, s, t] : mst)
     {
+        std::cout << s << " - " << t << " (waga = " << w << ")" << std::endl;
+
         total += w;
     }
-    assert(total == 19.0f);
+    assert(std::abs(total - 19.0f) < 1e-5f);
+
+    std::cout << "Total = " << total << std::endl;
 
     // Każda krawędź MST istnieje w grafie
     for (auto& [w, s, t] : mst)
@@ -49,6 +57,8 @@ int main()
     {
         assert(w > 0.0f);
     }
+
+    std::cout << "MST zawiera " << mst.size() << " krawedzi." << std::endl;
 
     std::cout << "Wszystkie asserty przeszly pomyslnie." << std::endl;
 
