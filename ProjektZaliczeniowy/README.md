@@ -1,4 +1,4 @@
-# Algorytm Borůvki
+# Algorytm Boruvki
 
 Algorytm Borůvki służy do wyznaczania **minimalnego drzewa rozpinającego** (MST – Minimum Spanning Tree) grafu ważonego. Jego działanie polega na stopniowym łączeniu rozłącznych składowych grafu za pomocą najtańszych dostępnych krawędzi.
 
