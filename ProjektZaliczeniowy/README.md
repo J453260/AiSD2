@@ -81,14 +81,14 @@ co zapewnia niemal stały czas działania obu operacji.
 
 | Operacja | Złożoność |
 |-----------|-----------|
-| Jedna iteracja | O(E) |
-| Liczba iteracji | O(log V) |
-| Cały algorytm | O(E log V) |
+| Jedna iteracja | O(n) |
+| Liczba iteracji | O(log m) |
+| Cały algorytm | O(n log m) |
 
 gdzie:
 
-- `V` – liczba wierzchołków,
-- `E` – liczba krawędzi.
+- `n` – liczba wierzchołków,
+- `m` – liczba krawędzi.
 
 ## Wynik
 
