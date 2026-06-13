@@ -6,38 +6,7 @@
 #include <limits>
 #include <set>
 #include "graph.hpp"
-
-
-struct UnionFind
-{
-    std::vector<int> parent, rank;
-
-    UnionFind(int n) : parent(n), rank(n, 0)
-    {
-        for (int i = 0; i < n; i++)
-        {
-            parent[i] = i;
-        }
-    }
-    int find(int x)
-    {
-        if (parent[x] != x)
-        {
-            parent[x] = find(parent[x]);
-        }
-        return parent[x];
-    }
-    bool unite(int x, int y)
-    {
-        int rx = find(x), ry = find(y);
-        if (rx == ry) return false;
-        if (rank[rx] < rank[ry]) std::swap(rx, ry);
-        parent[ry] = rx;
-        if (rank[rx] == rank[ry]) rank[rx]++;
-        return true;
-    }
-};
-
+#include "UnionFind.hpp"
 
 std::vector<std::tuple<float, int, int>> BoruvkaMST(Graph& g)
 {
@@ -58,28 +27,33 @@ std::vector<std::tuple<float, int, int>> BoruvkaMST(Graph& g)
     while(old_len > new_len)
     {
         old_len = new_len;
-        std::vector<std::tuple<double, double, double>> MinEdge(n, {infinity, -1, -1});
+        std::vector<std::tuple<double, int, int>> MinEdge(n, {infinity, -1, -1});
 
         for (auto it = g.edge_begin(); it != g.edge_end(); ++it)
         {
             Edge<int> e = *it;
-            int s  = e.source;
-            int t  = e.target;
+            int s = e.source;
+            int t = e.target;
             float w = e.weight;
 
             int s2 = uf.find(s);
             int t2 = uf.find(t);
 
+            //std::vector<std::tuple<float, int, int>> s2 = {w, s, t};
+            //std::vector<std::tuple<float, int, int>> t2 = {w, s, t};
+
             if (s2 != t2)
             {
-                if (w < std::get<0>(MinEdge[s2]))
+                auto candidate = std::make_tuple(w, s, t);
+
+                if (candidate < MinEdge[s2])
                 {
-                    MinEdge[s2] = {w, s, t};
+                    MinEdge[s2] = candidate;
                 }
 
-                if (w < std::get<0>(MinEdge[t2]))
+                if (candidate < MinEdge[t2])
                 {
-                    MinEdge[t2] = {w, s, t};
+                    MinEdge[t2] = candidate;
                 }
             }
         }
@@ -89,7 +63,7 @@ std::vector<std::tuple<float, int, int>> BoruvkaMST(Graph& g)
         {
             auto [edge_weight, s, t] = MinEdge[u];
 
-            if (edge_weight == infinity)  // graf niespójny
+            if (edge_weight == infinity)  // graf niespÃ³jny
             {
                 continue;
             }
