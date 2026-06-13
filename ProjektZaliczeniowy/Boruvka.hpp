@@ -96,4 +96,5 @@ std::vector<std::tuple<float, int, int>> BoruvkaMST(Graph& g)
     return T;
 }
 
+
 #endif // BORUVKA_HPP
